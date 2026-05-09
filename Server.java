@@ -22,6 +22,9 @@ public abstract class Server {
     private int port; // Port on which the server will listen
     private Map<String,String> countryColors;
 
+
+    
+
     private final List<String> messageQueue = Collections.synchronizedList(new ArrayList<>());
 
     public void sendMessageToUser(String message) {
@@ -39,6 +42,7 @@ public abstract class Server {
             server.createContext("/country-clicked", new CountryClickedHandler()); // POST route that is received when user clicks a country.
             server.createContext("/api", new APIHandler()); // POST route that is received when user clicks a country.
             server.createContext("/get-messages", new MessageHandler());
+            server.createContext("/create-virus", new VirusHandler());
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to start HTTP server on port " + port, e);
@@ -48,9 +52,43 @@ public abstract class Server {
 
     }
 
+    public class VirusHandler implements HttpHandler {
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+
+        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(405, -1);
+            return;
+        }
+        System.out.println("in the virus handler");
+        String body;
+        try (BufferedReader reader =
+                new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
+            body = reader.lines().collect(Collectors.joining("\n"));
+        }
+
+        System.out.println("Virus data received: " + body);
+
+        // send to your subclass (StudentCode)
+        handleVirus(body);
+
+        String response = "{\"status\":\"virus created\"}";
+        byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(200, bytes.length);
+
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(bytes);
+        }
+    }
+}
+
     public Server() {
         this(8000);
     }
+
+    public abstract void handleVirus(String data);
 
     public abstract void getInputCountries(String country1, String country2);
 

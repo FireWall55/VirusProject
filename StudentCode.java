@@ -5,9 +5,11 @@ public class StudentCode extends Server {
     String currSelected;
     Virus virus;
     int days;
+    Boolean virusStart;
     HashMap<String, Long> countryDeaths;
     HashMap<String, Long> infectedPopulation; //number of people infected in a country
     ArrayList<String> infectionColors;
+    HashSet<Country> infectedCountries;
 
     public StudentCode() {
         currSelected = "";
@@ -24,6 +26,8 @@ public class StudentCode extends Server {
         countryDeaths = new HashMap<>();
         infectedPopulation = new HashMap<>();
         infectionColors = new ArrayList<String>();
+        infectedCountries = new HashSet<Country>();
+        virusStart = false;
         setupColors();
 
     }
@@ -55,8 +59,51 @@ public class StudentCode extends Server {
     }
     @Override
     public void handleNextDay() {
-        System.out.println("Next day has been triggered.");
+        System.out.println("Next day has been triggered.: " + infectedCountries);
         this.days++;
+
+        HashSet<Country> toAdd = new HashSet<>();
+        
+        System.out.println("\n\n\n");
+        for(Country country : infectedCountries){
+            String name = country.getName();
+
+            long infected = infectedPopulation.getOrDefault(name, 0L);
+            long deaths = countryDeaths.getOrDefault(name, 0L);
+
+            countryDeaths.put(name, deaths + (long)(infected * virus.getFatalityTime()));
+            infectedPopulation.put(name, infected + (long)(infected * virus.getSpreadTime()));
+            //in the future need to make sure infectedPop doesn't get larger than the country's population
+            long newInfected = infectedPopulation.get(name);
+            Long pop = grapher.getPopulations().get(grapher.getCountries().get(name));
+            if(pop != null && pop > 0) {
+                double ratio = Math.min(1.0, (double) newInfected / pop);
+                addCountryColor(name, infectionColors.get((int)(ratio * 10)));
+            }
+
+            List<Country> neighbors = grapher.getNeighbors(grapher.getCountries().get(name));
+            if (neighbors == null) continue;
+            for(Country n : neighbors){
+                if(!infectedCountries.contains(n) && !toAdd.contains(n)){
+                    //if the neighbor is not infected
+                    if(Math.random()>.5){
+                        //can change the percentage based on country stats later
+                        //50% chance
+                        toAdd.add(n);
+                        countryDeaths.putIfAbsent(n.getName(), 0L);
+                        infectedPopulation.putIfAbsent(n.getName(), 10000L);
+
+                    }
+                    System.out.println(infectedCountries);
+                }
+            }
+
+        }
+
+        infectedCountries.addAll(toAdd);
+        updateColors();
+            
+
     }
     public void createVirus(String data) {
         // TODO: parse data and create the virus
@@ -90,28 +137,31 @@ public class StudentCode extends Server {
 
     @Override
     public void handleClick(String country) {
-        clearCountryColors();
-        currSelected = country;
-        countryDeaths.putIfAbsent(country, 0L);
-        infectedPopulation.putIfAbsent(country, 0L);
+        if(virusStart == false){
+            clearCountryColors();
+            currSelected = country;
+            countryDeaths.putIfAbsent(country, 0L);
+            infectedPopulation.putIfAbsent(country, 0L);
+            infectedCountries.add(grapher.getCountries().get(country));
 
-        if(infectedPopulation.get(country) == 0){
-            infectedPopulation.put(country, 10000L);
+            if(infectedPopulation.get(country) == 0){
+                infectedPopulation.put(country, 10000L);
+            }
+
+            int deaths = (int)(infectedPopulation.get(country) * virus.getFatalityTime());
+            countryDeaths.put(country, countryDeaths.get(country) + deaths);
+
+            int newInfections = (int)(infectedPopulation.get(country) * virus.getSpreadTime());
+            infectedPopulation.put(country, infectedPopulation.get(country) + newInfections);
+            
+            double ratio = (((double)infectedPopulation.get(country))/grapher.getPopulations().get(grapher.getCountries().get(country)));//between 0 and 10
+            System.out.println("infectedPop: " + infectedPopulation.get(country) + ", pop: " + 
+            grapher.getPopulations().get(grapher.getCountries().get(country)) + 
+            ",ratio: " + ratio + ", ratio*10: " + (ratio*10));
+            if (ratio > 1) ratio = 1;
+            addCountryColor(country, infectionColors.get((int)(ratio*10)));
         }
-
-        int deaths = (int)(infectedPopulation.get(country) * virus.getFatalityTime());
-        countryDeaths.put(country, countryDeaths.get(country) + deaths);
-
-        int newInfections = (int)(infectedPopulation.get(country) * virus.getSpreadTime());
-        infectedPopulation.put(country, infectedPopulation.get(country) + newInfections);
-        
-        double ratio = (((double)infectedPopulation.get(country))/grapher.getPopulations().get(grapher.getCountries().get(country)));//between 0 and 10
-        System.out.println("infectedPop: " + infectedPopulation.get(country) + ", pop: " + 
-        grapher.getPopulations().get(grapher.getCountries().get(country)) + 
-        ",ratio: " + ratio + ", ratio*10: " + (ratio*10));
-        if (ratio > 1) ratio = 1;
-        addCountryColor(country, infectionColors.get((int)(ratio*10)));
-
+        virusStart = true;
         /*
         long total = 0;
         System.out.println("handle click");
@@ -132,6 +182,18 @@ public class StudentCode extends Server {
 
     }
     public void updateColors(){
+        System.out.println("UPDATING COLORS");
+        for(Country c : infectedCountries){
+            long newInfected = infectedPopulation.get(c.getName());
+            Long pop = grapher.getPopulations().get(grapher.getCountries().get(c.getName()));
+            if(pop != null && pop > 0) {
+                double ratio = Math.min(1.0, (double) newInfected / pop);
+                System.out.println(c.getName() + ": ratio: " + infectionColors.get((int)(ratio * 10)));
+                addCountryColor(c.getName(), infectionColors.get((int)(ratio * 10)));
+            }
+        
+        }
+
 
     }
 

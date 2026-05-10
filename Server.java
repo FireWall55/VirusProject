@@ -101,9 +101,14 @@ public abstract class Server {
 
             handleNextDay();
 
-            String response = "{\"days\":" + getDays() + "}";
+            countryColors.put("days", String.valueOf(getDays()));
+            String response = mapToJSON(countryColors);
             byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
 
+            /*
+            String response = "{\"days\":" + getDays() + "}";
+            byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+            */
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, bytes.length);
             try (OutputStream os = exchange.getResponseBody()) {

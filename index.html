@@ -314,6 +314,8 @@
 						if (data.days !== undefined) {
 							daysDisplay.textContent = "Day: " + data.days;
 						}
+
+						updateCountriesFromHashmap(data)
 					})
 					.catch(err => console.error("Next day error:", err));
 			});
@@ -341,7 +343,7 @@
 		}
 
 		function updateCountriesFromHashmap(hashmap) {
-			resetAllCountryStyles();
+			//resetAllCountryStyles();
 
 			for (var country in hashmap) {
 				if (country === "extra") {

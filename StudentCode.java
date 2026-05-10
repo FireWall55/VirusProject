@@ -3,13 +3,19 @@ import java.util.*;
 public class StudentCode extends Server {
     CountryGrapher grapher;
     String currSelected;
+    Virus virus;
+    int days;
+    HashMap<String, Integer> countryInfectionLevel; //scale of 0-10, 10 being max infection rate 0 being no spread
+    HashMap<String, Integer> infectedPopulation; //number of people infected in a country
 
     public StudentCode() {
         currSelected = "";
+        this.days = 0;
         grapher = new CountryGrapher();
         grapher.loadData("CountryBorders.CSV");
         grapher.loadPopulationData("popData_updated.csv");
         long temp = 0;
+        this.virus = new Virus("PLACEHOLDER", 0.5, 3, 10);
         // some countries that are on the map but don't have a registered population
         grapher.getPopulations().put(grapher.getCountries().get("Holy See"), temp);
         grapher.getPopulations().put(grapher.getCountries().get("Western Sahara"), temp);
@@ -25,13 +31,23 @@ public class StudentCode extends Server {
     @Override
     public void handleVirus(String data) {
         System.out.println("Creating virus with: " + data);
-
         // later you'll parse JSON here
         createVirus(data);
     }
+    @Override
+    public void handleNextDay() {
+        System.out.println("Next day has been triggered.");
+        this.days++;
+    }
     public void createVirus(String data) {
         // TODO: parse data and create the virus
+        data = data.substring(1, data.length() - 1);
+        String[] data_vals = data.split(",");
+        int spread = Integer.parseInt(data_vals[0].split(":")[1].substring(1, data_vals[0].split(":")[1].length() - 1));
+        int incubation = Integer.parseInt(data_vals[1].split(":")[1].substring(1, data_vals[1].split(":")[1].length() - 1));
+        int fatality = Integer.parseInt(data_vals[2].split(":")[1].substring(1, data_vals[2].split(":")[1].length() - 1));
         sendMessageToUser("☣️ New virus created: " + data);
+        this.virus = new Virus("CustomVirus", spread, incubation, fatality);
         System.out.println(data);
     }
 
@@ -59,13 +75,9 @@ public class StudentCode extends Server {
         clearCountryColors();
         currSelected = country;
 
+        
+
         /*
-         * addCountryColor(country, "red");
-         * sendMessageToUser("Total population of countries: " +
-         * grapher.getCountries().get(country).getPopulation());
-         */
-        // if country doesn't exist, it will say so + pop=0. If country is island + does
-        // exist, it will break
         long total = 0;
         System.out.println("handle click");
         Set<Country> neighbors = grapher.withinRadius(country, 2);
@@ -81,6 +93,7 @@ public class StudentCode extends Server {
         addCountryColor(country, "red");
         sendMessageToUser("Total population of countries: " + total);
         System.out.println(grapher.getPopulations().get(grapher.getCountries().get(country)));
+        */
 
     }
 
@@ -88,5 +101,12 @@ public class StudentCode extends Server {
         clearCountryColors();
         HashSet<Country> allNeighbors = (HashSet<Country>) grapher.withinRadius(currSelected, 1);
 
+    }
+
+    
+
+    @Override
+    public int getDays() {
+        return this.days;
     }
 }

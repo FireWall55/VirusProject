@@ -126,6 +126,40 @@
 		cursor: pointer;
 	}
 
+	#nextDayButton {
+		position: fixed;
+		bottom: 20px;
+		right: 160px;
+		z-index: 9999;
+
+		padding: 10px 15px;
+		border: none;
+		border-radius: 6px;
+
+		background-color: #1a6b3a;
+		color: white;
+
+		cursor: pointer;
+	}
+
+	#nextDayButton:hover {
+		background-color: #145530;
+	}
+
+	#daysDisplay {
+		position: fixed;
+		bottom: 60px;
+		right: 160px;
+		z-index: 9999;
+
+		background-color: rgba(0, 0, 0, 0.65);
+		color: white;
+		padding: 5px 10px;
+		border-radius: 5px;
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-size: 14px;
+	}
+
 	/* BACKDROP */
 	.modal {
 		display: none;
@@ -250,9 +284,9 @@
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
-						spreadRate: 0.5,
-						incubation: 3,
-						fatalityTime: 10
+						spreadRate: spread,
+						incubation: incubation,
+						fatalityTime: fatality
 					})
 				})
 					.then(res => res.text())
@@ -263,6 +297,28 @@
 			});
 
 		}
+		function setupNextDayButton() {
+			const nextDayBtn = document.getElementById("nextDayButton");
+			const daysDisplay = document.getElementById("daysDisplay");
+
+
+			nextDayBtn.addEventListener("click", function () {
+				fetch("/next-day", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({})
+				})
+					.then(res => res.json())
+					.then(data => {
+						console.log("Next day response:", data);
+						if (data.days !== undefined) {
+							daysDisplay.textContent = "Day: " + data.days;
+						}
+					})
+					.catch(err => console.error("Next day error:", err));
+			});
+		}
+
 		function setupDebugButton() {
 			const debugButton = document.getElementById("debugButton");
 
@@ -273,6 +329,7 @@
 
 		setupDebugButton();
 		setupVirusModal();
+		setupNextDayButton();
 
 		// Helper Functions
 		function resetAllCountryStyles() {
@@ -798,6 +855,8 @@
 	<!-- starting new stuff  -->
 	<button id="debugButton">Click Me</button>
 
+	<div id="daysDisplay">Day: 0</div>
+	<button id="nextDayButton">⏭ Next Day</button>
 	<button id="virusButton">Virus Settings</button>
 	<div id="virusModal" class="modal">
 		<div class="modal-content">

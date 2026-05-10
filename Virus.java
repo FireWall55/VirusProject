@@ -24,5 +24,9 @@ public class Virus {
     public double getIncubationTime() {
         return this.incubationTime;
     }
+    @Override
+    public String toString(){
+        return "Name: " + getName() + ", FT: " + getFatalityTime() + ", ST: " + getSpreadTime() + ", IT: " + getIncubationTime();
+    }
 
 }

@@ -5,8 +5,9 @@ public class StudentCode extends Server {
     String currSelected;
     Virus virus;
     int days;
-    HashMap<String, Integer> countryInfectionLevel; //scale of 0-10, 10 being max infection rate 0 being no spread
-    HashMap<String, Integer> infectedPopulation; //number of people infected in a country
+    HashMap<String, Long> countryDeaths;
+    HashMap<String, Long> infectedPopulation; //number of people infected in a country
+    ArrayList<String> infectionColors;
 
     public StudentCode() {
         currSelected = "";
@@ -20,6 +21,24 @@ public class StudentCode extends Server {
         grapher.getPopulations().put(grapher.getCountries().get("Holy See"), temp);
         grapher.getPopulations().put(grapher.getCountries().get("Western Sahara"), temp);
 
+        countryDeaths = new HashMap<>();
+        infectedPopulation = new HashMap<>();
+        infectionColors = new ArrayList<String>();
+        setupColors();
+
+    }
+    public void setupColors(){
+        infectionColors.add("#faebeb");
+        infectionColors.add("#f5c9c9");
+        infectionColors.add("#f7b2b2");
+        infectionColors.add("#ff9191");
+        infectionColors.add("#f56767");
+        infectionColors.add("#f74040");
+        infectionColors.add("#fc1e1e");
+        infectionColors.add("#d90909");
+        infectionColors.add("#8c0101");
+        infectionColors.add("#520101");
+        infectionColors.add("#2e0000");
     }
 
     public static void main(String[] args) {
@@ -48,7 +67,6 @@ public class StudentCode extends Server {
         int fatality = Integer.parseInt(data_vals[2].split(":")[1].substring(1, data_vals[2].split(":")[1].length() - 1));
         sendMessageToUser("☣️ New virus created: " + data);
         this.virus = new Virus("CustomVirus", spread, incubation, fatality);
-        System.out.println(data);
     }
 
     @Override
@@ -74,8 +92,25 @@ public class StudentCode extends Server {
     public void handleClick(String country) {
         clearCountryColors();
         currSelected = country;
+        countryDeaths.putIfAbsent(country, 0L);
+        infectedPopulation.putIfAbsent(country, 0L);
 
+        if(infectedPopulation.get(country) == 0){
+            infectedPopulation.put(country, 10000L);
+        }
+
+        int deaths = (int)(infectedPopulation.get(country) * virus.getFatalityTime());
+        countryDeaths.put(country, countryDeaths.get(country) + deaths);
+
+        int newInfections = (int)(infectedPopulation.get(country) * virus.getSpreadTime());
+        infectedPopulation.put(country, infectedPopulation.get(country) + newInfections);
         
+        double ratio = (((double)infectedPopulation.get(country))/grapher.getPopulations().get(grapher.getCountries().get(country)));//between 0 and 10
+        System.out.println("infectedPop: " + infectedPopulation.get(country) + ", pop: " + 
+        grapher.getPopulations().get(grapher.getCountries().get(country)) + 
+        ",ratio: " + ratio + ", ratio*10: " + (ratio*10));
+        if (ratio > 1) ratio = 1;
+        addCountryColor(country, infectionColors.get((int)(ratio*10)));
 
         /*
         long total = 0;
@@ -96,10 +131,7 @@ public class StudentCode extends Server {
         */
 
     }
-
-    public void complex() {
-        clearCountryColors();
-        HashSet<Country> allNeighbors = (HashSet<Country>) grapher.withinRadius(currSelected, 1);
+    public void updateColors(){
 
     }
 

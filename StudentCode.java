@@ -126,6 +126,20 @@ public class StudentCode extends Server {
 
     @Override
     public void getInputCountries(String country1, String country2) {
+        System.out.println("Traveling countries: " + country1 + ", " + country2);
+        ArrayList<Country> shortest = (ArrayList<Country>) grapher.bfs(country1, country2);
+        if(shortest.isEmpty()){
+            //traveling over some seas
+            if(!infectedCountries.contains(grapher.getCountries().get(country1))) return;
+            //now the first country is an infected country
+
+            long currInfected = infectedPopulation.getOrDefault(country2, 0L);
+            System.out.println("current infected of " + country2 + ": " + currInfected);
+            infectedPopulation.put(country2, currInfected + 10000);
+            System.out.println("current infected of " + country2 + ": " + infectedPopulation.get(country2));
+            infectedCountries.add(grapher.getCountries().get(country2));
+        }
+        /*
         clearCountryColors();
         sendMessageToUser("The shortest path has been calculated.");
         ArrayList<Country> shortest = (ArrayList<Country>) grapher.bfs(country1, country2);
@@ -136,11 +150,13 @@ public class StudentCode extends Server {
         addCountryColor(country1, "red");
         addCountryColor(country2, "blue");
         setMessage("hello");
+
+        */
     }
 
     @Override
     public void getColorPath() {
-
+        
     }
 
     @Override

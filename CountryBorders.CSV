@@ -15,6 +15,7 @@ AL,Albania,GR,Greece
 AL,Albania,ME,Montenegro
 AL,Albania,MK,Macedonia
 AL,Albania,RS,Republic of Serbia
+AL,Albania,XK,Kosovo
 AM,Armenia,AZ,Azerbaijan
 AM,Armenia,GE,Georgia
 AM,Armenia,IR,Iran
@@ -166,7 +167,7 @@ CN,China,NP,Nepal
 CN,China,PK,Pakistan
 CN,China,RU,Russia
 CN,China,TJ,Tajikistan
-CN,China,VN,Viet Nam
+CN,China,VN,Vietnam
 CO,Colombia,BR,Brazil
 CO,Colombia,EC,Ecuador
 CO,Colombia,PA,Panama
@@ -264,7 +265,7 @@ GI,Gibraltar,ES,Spain
 GL,Greenland,,
 GM,Gambia ,SN,Senegal
 GN,Guinea,CI,Ivory Coast
-GN,Guinea,GW,Guinea-Bissau
+GN,Guinea,GW,Guinea Bissau
 GN,Guinea,LR,Liberia
 GN,Guinea,ML,Mali
 GN,Guinea,SN,Senegal
@@ -282,8 +283,8 @@ GT,Guatemala,SV,El Salvador
 GT,Guatemala,HN,Honduras
 GT,Guatemala,MX,Mexico
 GU,Guam,,
-GW,Guinea-Bissau,GN,Guinea
-GW,Guinea-Bissau,SN,Senegal
+GW,Guinea Bissau,GN,Guinea
+GW,Guinea Bissau,SN,Senegal
 GY,Guyana,BR,Brazil
 GY,Guyana,SR,Suriname
 GY,Guyana,VE,Venezuela
@@ -361,7 +362,7 @@ KG,Kyrgyzstan,TJ,Tajikistan
 KG,Kyrgyzstan,UZ,Uzbekistan
 KH,Cambodia,LA,Laos
 KH,Cambodia,TH,Thailand
-KH,Cambodia,VN,Viet Nam
+KH,Cambodia,VN,Vietnam
 KI,Kiribati,,
 KM,Comoros,,
 KN,Saint Kitts and Nevis,,
@@ -377,11 +378,15 @@ KZ,Kazakhstan,KG,Kyrgyzstan
 KZ,Kazakhstan,RU,Russia
 KZ,Kazakhstan,TM,Turkmenistan
 KZ,Kazakhstan,UZ,Uzbekistan
+XK,Kosovo,AL,Albania
+XK,Kosovo,MK,Macedonia
+XK,Kosovo,ME,Montenegro
+XK,Kosovo,RS,Republic of Serbia
 LA,Laos,CN,China
 LA,Laos,KH,Cambodia
 LA,Laos,MM,Myanmar
 LA,Laos,TH,Thailand
-LA,Laos,VN,Viet Nam
+LA,Laos,VN,Vietnam
 LB,Lebanon,IL,Israel
 LB,Lebanon,SY,Syria
 LC,Saint Lucia,,
@@ -419,6 +424,7 @@ ME,Montenegro,AL,Albania
 ME,Montenegro,BA,Bosnia and Herzegovina
 ME,Montenegro,HR,Croatia
 ME,Montenegro,RS,Republic of Serbia
+ME,Montenegro,XK,Kosovo
 MF,Saint Martin ,SX,Sint Maarten
 MG,Madagascar,,
 MH,Marshall Islands,,
@@ -426,6 +432,7 @@ MK,Macedonia,AL,Albania
 MK,Macedonia,BG,Bulgaria
 MK,Macedonia,GR,Greece
 MK,Macedonia,RS,Republic of Serbia
+MK,Macedonia,XK,Kosovo
 ML,Mali,DZ,Algeria
 ML,Mali,BF,Burkina Faso
 ML,Mali,CI,Ivory Coast
@@ -461,7 +468,7 @@ MY,Malaysia,BN,Brunei Darussalam
 MY,Malaysia,ID,Indonesia
 MY,Malaysia,TH,Thailand
 MZ,Mozambique,MW,Malawi
-MZ,Mozambique,SZ,Eswatini
+MZ,Mozambique,SZ,Swaziland
 MZ,Mozambique,ZA,South Africa
 MZ,Mozambique,TZ,United Republic of Tanzania
 MZ,Mozambique,ZM,Zambia
@@ -545,6 +552,7 @@ RS,Republic of Serbia,HU,Hungary
 RS,Republic of Serbia,ME,Montenegro
 RS,Republic of Serbia,MK,Macedonia
 RS,Republic of Serbia,RO,Romania
+RS,Republic of Serbia,XK,Kosovo
 RU,Russia,AZ,Azerbaijan
 RU,Russia,BY,Belarus
 RU,Russia,CN,China
@@ -598,7 +606,7 @@ SL,Sierra Leone,LR,Liberia
 SM,San Marinou,IT,Italy
 SN,Senegal,GM,Gambia
 SN,Senegal,GN,Guinea
-SN,Senegal,GW,Guinea-Bissau
+SN,Senegal,GW,Guinea Bissau
 SN,Senegal,ML,Mali
 SN,Senegal,MR,Mauritania
 SO,Somalia,DJ,Djibouti
@@ -621,8 +629,8 @@ SY,Syria,IL,Israel
 SY,Syria,JO,Jordan
 SY,Syria,LB,Lebanon
 SY,Syria,TR,Turkey
-SZ,Eswatini,MZ,Mozambique
-SZ,Eswatini,ZA,South Africa
+SZ,Swaziland,MZ,Mozambique
+SZ,Swaziland,ZA,South Africa
 TC,Turks and Caicos Islands,,
 TD,Chad,CM,Cameroon
 TD,Chad,CF,Central African Republic
@@ -699,9 +707,9 @@ VE,Venezuela ,CO,Colombia
 VE,Venezuela ,GY,Guyana
 VG,Virgin Islands ,,
 VI,Virgin Islands ,,
-VN,Viet Nam,KH,Cambodia
-VN,Viet Nam,CN,China
-VN,Viet Nam,LA,Laos
+VN,Vietnam,KH,Cambodia
+VN,Vietnam,CN,China
+VN,Vietnam,LA,Laos
 VU,Vanuatu,,
 WF,Wallis and Futuna,,
 WS,Samoa,,
@@ -712,7 +720,7 @@ ZA,South Africa,BW,Botswana
 ZA,South Africa,LS,Lesotho
 ZA,South Africa,MZ,Mozambique
 ZA,South Africa,NA,Namibia
-ZA,South Africa,SZ,Eswatini
+ZA,South Africa,SZ,Swaziland
 ZA,South Africa,ZW,Zimbabwe
 ZM,Zambia,AO,Angola
 ZM,Zambia,BW,Botswana

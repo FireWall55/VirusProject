@@ -110,7 +110,7 @@
 		z-index: 9999;
 	}
 
-	#virusButton {
+	#resetButton {
 		position: fixed;
 		bottom: 20px;
 		right: 20px;
@@ -120,7 +120,7 @@
 		border: none;
 		border-radius: 6px;
 
-		background-color: #222;
+		background-color: #ff4444;
 		color: white;
 
 		cursor: pointer;
@@ -158,6 +158,60 @@
 		border-radius: 5px;
 		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 		font-size: 14px;
+	}
+
+	#select-country-overlay {
+		position: absolute;
+		top: 30%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 1001;
+		color: black;
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-size: 28px;
+		font-weight: 600;
+		text-align: center;
+		pointer-events: none;
+	}
+
+	#startCountryDisplay {
+		position: fixed;
+		bottom: 20px;
+		right: 320px;
+		z-index: 9999;
+		background-color: rgba(255, 255, 255, 0.9);
+		color: black;
+		padding: 8px 12px;
+		border-radius: 6px;
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-size: 14px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+	}
+
+	#simulationStats {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 9999;
+		background-color: rgba(255, 255, 255, 0.9);
+		color: black;
+		padding: 12px 16px;
+		border-radius: 10px;
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-size: 14px;
+		line-height: 1.5;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+		max-width: 220px;
+	}
+
+	#simulationStats .statTitle {
+		font-size: 16px;
+		font-weight: 700;
+		margin-bottom: 10px;
+	}
+
+	#simulationStats .statValue {
+		margin: 4px 0;
 	}
 
 	/* BACKDROP */
@@ -264,7 +318,20 @@
 
 			// OPEN popup
 			openBtn.addEventListener("click", function () {
-				modal.style.display = "block";
+				// Fetch current virus data
+				fetch("/get-virus")
+					.then(res => res.json())
+					.then(data => {
+						console.log("Current virus data:", data);
+						document.getElementById("fatalityTime").value = data.fatalityTime || "";
+						document.getElementById("spreadRate").value = data.spreadRate || "";
+						document.getElementById("incubationTime").value = data.incubation || "";
+						modal.style.display = "block";
+					})
+					.catch(err => {
+						console.log("Error fetching virus data:", err);
+						modal.style.display = "block";
+					});
 			});
 
 			// CLOSE popup
@@ -321,17 +388,40 @@
 			});
 		}
 
-		function setupDebugButton() {
-			const debugButton = document.getElementById("debugButton");
+		function setupResetButton() {
+			const resetBtn = document.getElementById("resetButton");
+			const selectCountryOverlay = document.getElementById("select-country-overlay");
+			const startCountryDisplay = document.getElementById("startCountryDisplay");
+			const daysDisplay = document.getElementById("daysDisplay");
 
-			debugButton.addEventListener("click", function () {
-				console.log("Button works 🔥");
+			resetBtn.addEventListener("click", function () {
+				fetch("/reset-simulation", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({})
+				})
+					.then(res => res.json())
+					.then(data => {
+						console.log("Reset response:", data);
+						if (data.days !== undefined) {
+							daysDisplay.textContent = "Day: " + data.days;
+						}
+						if (selectCountryOverlay) {
+							selectCountryOverlay.style.display = "block";
+						}
+						if (startCountryDisplay) {
+							startCountryDisplay.textContent = "Starting Country: None";
+						}
+						resetAllCountryStyles();
+						updateCountriesFromHashmap(data);
+					})
+					.catch(err => console.error("Reset error:", err));
 			});
 		}
 
-		setupDebugButton();
 		setupVirusModal();
 		setupNextDayButton();
+		setupResetButton();
 
 		// Helper Functions
 		function resetAllCountryStyles() {
@@ -343,29 +433,52 @@
 		}
 
 		function updateCountriesFromHashmap(hashmap) {
-			//resetAllCountryStyles();
+			resetAllCountryStyles();
 
-			for (var country in hashmap) {
-				if (country === "extra") {
-					document.getElementById("distance-display").textContent = hashmap[country];
+			const reservedKeys = {
+				extra: true,
+				totalInfected: true,
+				infectedCountries: true,
+				totalDeaths: true,
+				days: true
+			};
+
+			for (var key in hashmap) {
+				if (reservedKeys[key]) {
 					continue;
 				}
 
-				if (countryLayers.hasOwnProperty(country)) {
-					console.log("Updating 	color for country code:", country, "to", hashmap[country]);
-					countryLayers[country].setStyle({
-						color: hashmap[country],
-						fillColor: hashmap[country],
+				if (countryLayers.hasOwnProperty(key)) {
+					console.log("Updating 	color for country code:", key, "to", hashmap[key]);
+					countryLayers[key].setStyle({
+						color: hashmap[key],
+						fillColor: hashmap[key],
 						fillOpacity: 0.5
 					});
-					previousFormedCountries.push(countryLayers[country]);
+					previousFormedCountries.push(countryLayers[key]);
 				} else {
-					console.log("Country not found in layers:", country);
+					console.log("Country not found in layers:", key);
 				}
 			}
+
+			if (hashmap.extra !== undefined) {
+				document.getElementById("distance-display").textContent = hashmap.extra;
+			}
+
+			updateSimulationStats(hashmap);
 		}
 
+		const selectCountryOverlay = document.getElementById("select-country-overlay");
+		const startCountryDisplay = document.getElementById("startCountryDisplay");
+		const simulationStats = document.getElementById("simulationStats");
+
 		function sendCountryClick(countryName) {
+			if (selectCountryOverlay) {
+				selectCountryOverlay.style.display = "none";
+			}
+			if (startCountryDisplay) {
+				startCountryDisplay.textContent = "Starting Country: " + countryName;
+			}
 			fetch("/country-clicked", {
 				method: "POST",
 				headers: { "Content-Type": "text/plain" },
@@ -374,6 +487,19 @@
 				.then(response => response.json())
 				.then(updateCountriesFromHashmap)
 				.catch(error => console.error("Error:", error));
+		}
+
+		function updateSimulationStats(data) {
+			if (!simulationStats) return;
+			if (data.totalInfected !== undefined) {
+				document.getElementById("stat-infected").textContent = "Total infected: " + data.totalInfected;
+			}
+			if (data.infectedCountries !== undefined) {
+				document.getElementById("stat-countries").textContent = "Infected countries: " + data.infectedCountries;
+			}
+			if (data.totalDeaths !== undefined) {
+				document.getElementById("stat-deaths").textContent = "Total deaths: " + data.totalDeaths;
+			}
 		}
 
 		function sendFormSubmission(country1Name, country2Name) {
@@ -478,6 +604,13 @@
 		<button id="playButton">PLAY</button>
 	</div>
 	<div id="map"></div>
+	<div id="simulationStats">
+		<div class="statTitle">Simulation Stats</div>
+		<div id="stat-infected" class="statValue">Total infected: 0</div>
+		<div id="stat-countries" class="statValue">Infected countries: 0</div>
+		<div id="stat-deaths" class="statValue">Total deaths: 0</div>
+	</div>
+	<div id="select-country-overlay">select country</div>
 	<form id="country-form">
 		<label for="country1-name">Country1 Name:</label>
 		<!-- <input type="text" id="country1-name" name="country1-name" placeholder="Enter country1 name"> -->
@@ -858,8 +991,10 @@
 	<button id="debugButton">Click Me</button>
 
 	<div id="daysDisplay">Day: 0</div>
+	<div id="startCountryDisplay">Starting Country: None</div>
 	<button id="nextDayButton">⏭ Next Day</button>
 	<button id="virusButton">Virus Settings</button>
+	<button id="resetButton">🔄 Reset Simulation</button>
 	<div id="virusModal" class="modal">
 		<div class="modal-content">
 

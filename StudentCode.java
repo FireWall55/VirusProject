@@ -197,7 +197,44 @@ public class StudentCode extends Server {
 
     }
 
+    @Override
+    public void handleReset() {
+        clearCountryColors();
+        days = 0;
+        virusStart = false;
+        currSelected = "";
+        countryDeaths.clear();
+        infectedPopulation.clear();
+        infectedCountries.clear();
+        virus = new Virus("PLACEHOLDER", 0.5, 3, 10);
+        sendMessageToUser("Simulation reset to default state.");
+    }
+
+    @Override
+    public String getVirusData() {
+        return "{\"spreadRate\":" + virus.getSpreadTime() + ",\"incubation\":" + virus.getIncubationTime() + ",\"fatalityTime\":" + virus.getFatalityTime() + "}";
+    }
+
     
+
+    @Override
+    public Map<String, String> getSimulationStats() {
+        long totalInfected = 0;
+        for (Long infected : infectedPopulation.values()) {
+            totalInfected += infected;
+        }
+
+        long totalDeaths = 0;
+        for (Long deaths : countryDeaths.values()) {
+            totalDeaths += deaths;
+        }
+
+        Map<String, String> stats = new HashMap<>();
+        stats.put("totalInfected", String.valueOf(totalInfected));
+        stats.put("infectedCountries", String.valueOf(infectedCountries.size()));
+        stats.put("totalDeaths", String.valueOf(totalDeaths));
+        return stats;
+    }
 
     @Override
     public int getDays() {

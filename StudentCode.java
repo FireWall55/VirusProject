@@ -265,4 +265,5 @@ public class StudentCode extends Server {
     public int getDays() {
         return this.days;
     }
+
 }

@@ -94,70 +94,96 @@
 		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	}
 
-	#debugButton:disabled {
+	@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap');
+
+	/* ── BOTTOM CONTROL BAR ── */
+	#control-bar {
 		position: fixed;
-		bottom: 20px;
-		right: 20px;
-
-		padding: 10px 15px;
-		border: none;
-		border-radius: 6px;
-
-		background-color: #222;
-		color: white;
-
-		cursor: pointer;
+		bottom: 24px;
+		right: 24px;
 		z-index: 9999;
-	}
-
-	#resetButton {
-		position: fixed;
-		bottom: 20px;
-		right: 20px;
-		z-index: 9999;
-
-		padding: 10px 15px;
-		border: none;
-		border-radius: 6px;
-
-		background-color: #ff4444;
-		color: white;
-
-		cursor: pointer;
-	}
-
-	#nextDayButton {
-		position: fixed;
-		bottom: 20px;
-		right: 160px;
-		z-index: 9999;
-
-		padding: 10px 15px;
-		border: none;
-		border-radius: 6px;
-
-		background-color: #1a6b3a;
-		color: white;
-
-		cursor: pointer;
-	}
-
-	#nextDayButton:hover {
-		background-color: #145530;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		background: rgba(10, 10, 14, 0.88);
+		backdrop-filter: blur(12px);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: 14px;
+		padding: 10px 14px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
 	}
 
 	#daysDisplay {
-		position: fixed;
-		bottom: 60px;
-		right: 160px;
-		z-index: 9999;
+		font-family: 'Share Tech Mono', monospace;
+		font-size: 13px;
+		color: rgba(255,255,255,0.5);
+		letter-spacing: 0.05em;
+		padding: 0 6px 0 2px;
+		white-space: nowrap;
+	}
+	#daysDisplay span {
+		color: #e8e8e8;
+		font-size: 18px;
+		font-weight: bold;
+	}
 
-		background-color: rgba(0, 0, 0, 0.65);
-		color: white;
-		padding: 5px 10px;
-		border-radius: 5px;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		font-size: 14px;
+	.bar-divider {
+		width: 1px;
+		height: 28px;
+		background: rgba(255,255,255,0.1);
+		flex-shrink: 0;
+	}
+
+	.ctrl-btn {
+		font-family: 'Rajdhani', sans-serif;
+		font-weight: 700;
+		font-size: 13px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		border: none;
+		border-radius: 8px;
+		padding: 8px 16px;
+		cursor: pointer;
+		transition: filter 0.15s, transform 0.1s;
+		white-space: nowrap;
+	}
+	.ctrl-btn:hover  { filter: brightness(1.18); }
+	.ctrl-btn:active { transform: scale(0.96); }
+
+	#nextDayButton {
+		background: linear-gradient(135deg, #1a7a42 0%, #0f5c2e 100%);
+		color: #a6f0c0;
+		box-shadow: 0 0 12px rgba(26,122,66,0.45);
+	}
+	#virusButton {
+		background: linear-gradient(135deg, #7a1a1a 0%, #5c0f0f 100%);
+		color: #f0a6a6;
+		box-shadow: 0 0 12px rgba(122,26,26,0.4);
+	}
+	#resetButton {
+		background: rgba(255,255,255,0.06);
+		color: rgba(255,255,255,0.45);
+		border: 1px solid rgba(255,255,255,0.1);
+	}
+	#resetButton:hover { color: rgba(255,255,255,0.75); }
+
+	#debugButton:disabled { display: none; }
+
+	/* Origin pill */
+	#startCountryDisplay {
+		position: fixed;
+		bottom: 88px;
+		right: 24px;
+		z-index: 9999;
+		font-family: 'Share Tech Mono', monospace;
+		font-size: 11px;
+		letter-spacing: 0.06em;
+		color: rgba(255,255,255,0.5);
+		background: rgba(10,10,14,0.75);
+		backdrop-filter: blur(8px);
+		border: 1px solid rgba(255,255,255,0.07);
+		border-radius: 8px;
+		padding: 5px 12px;
 	}
 
 	#select-country-overlay {
@@ -167,52 +193,61 @@
 		transform: translate(-50%, -50%);
 		z-index: 1001;
 		color: black;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-family: 'Rajdhani', sans-serif;
 		font-size: 28px;
-		font-weight: 600;
+		font-weight: 700;
 		text-align: center;
 		pointer-events: none;
+		letter-spacing: 0.04em;
 	}
 
-	#startCountryDisplay {
-		position: fixed;
-		bottom: 20px;
-		right: 320px;
-		z-index: 9999;
-		background-color: rgba(255, 255, 255, 0.9);
-		color: black;
-		padding: 8px 12px;
-		border-radius: 6px;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		font-size: 14px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-	}
-
+	/* ── STATS PANEL ── */
 	#simulationStats {
 		position: fixed;
 		top: 20px;
 		right: 20px;
 		z-index: 9999;
-		background-color: rgba(255, 255, 255, 0.9);
-		color: black;
-		padding: 12px 16px;
-		border-radius: 10px;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		font-size: 14px;
-		line-height: 1.5;
-		box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-		max-width: 220px;
+		background: rgba(10, 10, 14, 0.88);
+		backdrop-filter: blur(14px);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: 14px;
+		padding: 16px 20px;
+		min-width: 210px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+		font-family: 'Rajdhani', sans-serif;
 	}
-
 	#simulationStats .statTitle {
-		font-size: 16px;
+		font-size: 11px;
 		font-weight: 700;
-		margin-bottom: 10px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: rgba(255,255,255,0.3);
+		margin-bottom: 14px;
+		padding-bottom: 10px;
+		border-bottom: 1px solid rgba(255,255,255,0.07);
 	}
-
-	#simulationStats .statValue {
-		margin: 4px 0;
+	#simulationStats .statRow {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin: 8px 0;
 	}
+	#simulationStats .statLabel {
+		font-size: 12px;
+		font-weight: 500;
+		color: rgba(255,255,255,0.4);
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	#simulationStats .statNumber {
+		font-family: 'Share Tech Mono', monospace;
+		font-size: 15px;
+		color: #e8e8e8;
+		letter-spacing: 0.02em;
+	}
+	#simulationStats .statNumber.danger  { color: #f87272; }
+	#simulationStats .statNumber.warning { color: #fbbf24; }
+	#simulationStats .statNumber.safe    { color: #6ee7a0; }
 
 	/* BACKDROP */
 	.modal {
@@ -379,7 +414,7 @@
 					.then(data => {
 						console.log("Next day response:", data);
 						if (data.days !== undefined) {
-							daysDisplay.textContent = "Day: " + data.days;
+							daysDisplay.querySelector('span').textContent = data.days;
 						}
 
 						updateCountriesFromHashmap(data)
@@ -404,13 +439,14 @@
 					.then(data => {
 						console.log("Reset response:", data);
 						if (data.days !== undefined) {
-							daysDisplay.textContent = "Day: " + data.days;
+							daysDisplay.querySelector('span').textContent = data.days;
 						}
 						if (selectCountryOverlay) {
 							selectCountryOverlay.style.display = "block";
 						}
 						if (startCountryDisplay) {
-							startCountryDisplay.textContent = "Starting Country: None";
+							startCountryDisplay.textContent = "Origin: None";
+					originSet = false;
 						}
 						resetAllCountryStyles();
 						updateCountriesFromHashmap(data);
@@ -471,13 +507,15 @@
 		const selectCountryOverlay = document.getElementById("select-country-overlay");
 		const startCountryDisplay = document.getElementById("startCountryDisplay");
 		const simulationStats = document.getElementById("simulationStats");
+		let originSet = false;
 
 		function sendCountryClick(countryName) {
 			if (selectCountryOverlay) {
 				selectCountryOverlay.style.display = "none";
 			}
-			if (startCountryDisplay) {
-				startCountryDisplay.textContent = "Starting Country: " + countryName;
+			if (startCountryDisplay && !originSet) {
+				startCountryDisplay.textContent = "Origin: " + countryName;
+				originSet = true;
 			}
 			fetch("/country-clicked", {
 				method: "POST",
@@ -492,13 +530,13 @@
 		function updateSimulationStats(data) {
 			if (!simulationStats) return;
 			if (data.totalInfected !== undefined) {
-				document.getElementById("stat-infected").textContent = "Total infected: " + data.totalInfected;
+				document.getElementById("stat-infected").textContent = Number(data.totalInfected).toLocaleString();
 			}
 			if (data.infectedCountries !== undefined) {
-				document.getElementById("stat-countries").textContent = "Infected countries: " + data.infectedCountries;
+				document.getElementById("stat-countries").textContent = data.infectedCountries;
 			}
 			if (data.totalDeaths !== undefined) {
-				document.getElementById("stat-deaths").textContent = "Total deaths: " + data.totalDeaths;
+				document.getElementById("stat-deaths").textContent = Number(data.totalDeaths).toLocaleString();
 			}
 		}
 
@@ -606,9 +644,18 @@
 	<div id="map"></div>
 	<div id="simulationStats">
 		<div class="statTitle">Simulation Stats</div>
-		<div id="stat-infected" class="statValue">Total infected: 0</div>
-		<div id="stat-countries" class="statValue">Infected countries: 0</div>
-		<div id="stat-deaths" class="statValue">Total deaths: 0</div>
+		<div class="statRow">
+			<span class="statLabel">Infected</span>
+			<span id="stat-infected" class="statNumber warning">0</span>
+		</div>
+		<div class="statRow">
+			<span class="statLabel">Countries</span>
+			<span id="stat-countries" class="statNumber safe">0</span>
+		</div>
+		<div class="statRow">
+			<span class="statLabel">Deaths</span>
+			<span id="stat-deaths" class="statNumber danger">0</span>
+		</div>
 	</div>
 	<div id="select-country-overlay">select country</div>
 	<form id="country-form">
@@ -988,13 +1035,18 @@
 	</form>
 
 	<!-- starting new stuff  -->
-	<button id="debugButton">Click Me</button>
+	<button id="debugButton" style="display:none">Click Me</button>
 
-	<div id="daysDisplay">Day: 0</div>
-	<div id="startCountryDisplay">Starting Country: None</div>
-	<button id="nextDayButton">⏭ Next Day</button>
-	<button id="virusButton">Virus Settings</button>
-	<button id="resetButton">🔄 Reset Simulation</button>
+	<div id="startCountryDisplay">Origin: None</div>
+
+	<div id="control-bar">
+		<div id="daysDisplay">DAY&nbsp;<span>0</span></div>
+		<div class="bar-divider"></div>
+		<button id="nextDayButton" class="ctrl-btn">⏭ Next Day</button>
+		<button id="virusButton" class="ctrl-btn">☣ Virus</button>
+		<div class="bar-divider"></div>
+		<button id="resetButton" class="ctrl-btn">↺ Reset</button>
+	</div>
 	<div id="virusModal" class="modal">
 		<div class="modal-content">
 

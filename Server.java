@@ -44,6 +44,8 @@ public abstract class Server {
             server.createContext("/get-messages", new MessageHandler());
             server.createContext("/create-virus", new VirusHandler());
             server.createContext("/next-day", new NextDayHandler());
+            server.createContext("/reset-simulation", new ResetHandler());
+            server.createContext("/get-virus", new GetVirusHandler());
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to start HTTP server on port " + port, e);
@@ -100,6 +102,7 @@ public abstract class Server {
             }
 
             handleNextDay();
+            appendSimulationStats();
 
             countryColors.put("days", String.valueOf(getDays()));
             String response = mapToJSON(countryColors);
@@ -130,6 +133,19 @@ public abstract class Server {
     public abstract void getColorPath();
 
     public abstract void handleClick(String country);
+
+    public abstract void handleReset();
+
+    public abstract Map<String, String> getSimulationStats();
+
+    public abstract String getVirusData();
+
+    public void appendSimulationStats() {
+        Map<String, String> stats = getSimulationStats();
+        if (stats != null) {
+            countryColors.putAll(stats);
+        }
+    }
 
     public void clearCountryColors(){
         countryColors.clear();
@@ -247,6 +263,8 @@ static class StaticFileHandler implements HttpHandler {
 
                 System.out.println("Country clicked: " + country);
                 handleClick(country); // Handled in student code
+                appendSimulationStats();
+                countryColors.put("days", String.valueOf(getDays()));
 
                 String jSONClickedMap = mapToJSON(countryColors);
                 System.out.println("ClickedMap: " + countryColors);
@@ -286,6 +304,8 @@ static class StaticFileHandler implements HttpHandler {
                 System.out.println("country1: " + country1);
                 System.out.println("country2: " + country2);
                 getInputCountries(country1,country2);
+                appendSimulationStats();
+                countryColors.put("days", String.valueOf(getDays()));
 
                 // This is a KEY example on how you can give a hashmap of countries+color to the frontend to display!
                 //Map<String, String> countryColors = getInputCountries(country1,country2);
@@ -394,5 +414,47 @@ static class StaticFileHandler implements HttpHandler {
         }
 
         return result;
+    }
+
+    public class ResetHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
+                return;
+            }
+
+            handleReset();
+            appendSimulationStats();
+
+            countryColors.put("days", String.valueOf(getDays()));
+            String response = mapToJSON(countryColors);
+            byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(bytes);
+            }
+        }
+    }
+
+    public class GetVirusHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
+                return;
+            }
+
+            String virusData = getVirusData();
+            byte[] bytes = virusData.getBytes(StandardCharsets.UTF_8);
+
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(bytes);
+            }
+        }
     }
 }

@@ -70,12 +70,20 @@ public class StudentCode extends Server {
 
             long infected = infectedPopulation.getOrDefault(name, 0L);
             long deaths = countryDeaths.getOrDefault(name, 0L);
+            long alive = infected - deaths;
 
-            countryDeaths.put(name, deaths + (long)(infected * virus.getFatalityTime()));
-            infectedPopulation.put(name, infected + (long)(infected * virus.getSpreadTime()));
-            //in the future need to make sure infectedPop doesn't get larger than the country's population
-            long newInfected = infectedPopulation.get(name);
+            if (alive<0) alive = 0;
+
+            long newDeaths = deaths + (long)(alive * virus.getFatalityTime());
+            long newInfected = infected + (long)(alive * virus.getSpreadTime());
+
             Long pop = grapher.getPopulations().get(grapher.getCountries().get(name));
+            
+            countryDeaths.put(name, Math.min(newDeaths, infected));
+            infectedPopulation.put(name, Math.min(newInfected, pop)); 
+            
+            
+            newInfected = infectedPopulation.get(name);
             if(pop != null && pop > 0) {
                 double ratio = Math.min(1.0, (double) newInfected / pop);
                 addCountryColor(name, infectionColors.get((int)(ratio * 10)));
@@ -109,9 +117,9 @@ public class StudentCode extends Server {
         // TODO: parse data and create the virus
         data = data.substring(1, data.length() - 1);
         String[] data_vals = data.split(",");
-        int spread = Integer.parseInt(data_vals[0].split(":")[1].substring(1, data_vals[0].split(":")[1].length() - 1));
-        int incubation = Integer.parseInt(data_vals[1].split(":")[1].substring(1, data_vals[1].split(":")[1].length() - 1));
-        int fatality = Integer.parseInt(data_vals[2].split(":")[1].substring(1, data_vals[2].split(":")[1].length() - 1));
+        double spread = Double.parseDouble(data_vals[0].split(":")[1].substring(1, data_vals[0].split(":")[1].length() - 1));
+        double incubation = Double.parseDouble(data_vals[1].split(":")[1].substring(1, data_vals[1].split(":")[1].length() - 1));
+        double fatality = Double.parseDouble(data_vals[2].split(":")[1].substring(1, data_vals[2].split(":")[1].length() - 1));
         sendMessageToUser("☣️ New virus created: " + data);
         this.virus = new Virus("CustomVirus", spread, incubation, fatality);
     }
@@ -149,6 +157,7 @@ public class StudentCode extends Server {
             }
 
             int deaths = (int)(infectedPopulation.get(country) * virus.getFatalityTime());
+            System.out.println("fat: " + this.virus.getFatalityTime());
             countryDeaths.put(country, countryDeaths.get(country) + deaths);
 
             int newInfections = (int)(infectedPopulation.get(country) * virus.getSpreadTime());
@@ -197,7 +206,44 @@ public class StudentCode extends Server {
 
     }
 
+    @Override
+    public void handleReset() {
+        clearCountryColors();
+        days = 0;
+        virusStart = false;
+        currSelected = "";
+        countryDeaths.clear();
+        infectedPopulation.clear();
+        infectedCountries.clear();
+        virus = new Virus("PLACEHOLDER", 0.5, 3, 10);
+        sendMessageToUser("Simulation reset to default state.");
+    }
+
+    @Override
+    public String getVirusData() {
+        return "{\"spreadRate\":" + virus.getSpreadTime() + ",\"incubation\":" + virus.getIncubationTime() + ",\"fatalityTime\":" + virus.getFatalityTime() + "}";
+    }
+
     
+
+    @Override
+    public Map<String, String> getSimulationStats() {
+        long totalInfected = 0;
+        for (Long infected : infectedPopulation.values()) {
+            totalInfected += infected;
+        }
+
+        long totalDeaths = 0;
+        for (Long deaths : countryDeaths.values()) {
+            totalDeaths += deaths;
+        }
+
+        Map<String, String> stats = new HashMap<>();
+        stats.put("totalInfected", String.valueOf(totalInfected));
+        stats.put("infectedCountries", String.valueOf(infectedCountries.size()));
+        stats.put("totalDeaths", String.valueOf(totalDeaths));
+        return stats;
+    }
 
     @Override
     public int getDays() {

@@ -358,10 +358,9 @@
 					.then(res => res.json())
 					.then(data => {
 						console.log("Current virus data:", data);
-						document.getElementById("fatalityTime").value = data.fatalityTime || "";
+						document.getElementById("fatalityTime").value = data.fatalityRate || data.fatalityTime || "";
 						document.getElementById("spreadRate").value = data.spreadRate || "";
-						document.getElementById("incubationTime").value = data.incubation || "";
-						modal.style.display = "block";
+							modal.style.display = "block";
 					})
 					.catch(err => {
 						console.log("Error fetching virus data:", err);
@@ -379,7 +378,6 @@
 
 				const fatality = document.getElementById("fatalityTime").value;
 				const spread = document.getElementById("spreadRate").value;
-				const incubation = document.getElementById("incubationTime").value;
 				console.log("fatality: " + fatality);
 
 				fetch("/create-virus", {
@@ -387,7 +385,6 @@
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
 						spreadRate: spread,
-						incubation: incubation,
 						fatalityTime: fatality
 					})
 				})
@@ -1052,14 +1049,11 @@
 
 			<h3>Virus Settings</h3>
 
-			<label>Fatality Time</label>
+			<label>Fatality rate</label>
 			<input type="number" id="fatalityTime">
 
 			<label>Spread Rate</label>
 			<input type="number" id="spreadRate">
-
-			<label>Incubation Time</label>
-			<input type="number" id="incubationTime">
 
 			<button id="submitVirus">Apply</button>
 			<button id="closeVirus">Close</button>

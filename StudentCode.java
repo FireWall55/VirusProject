@@ -18,7 +18,7 @@ public class StudentCode extends Server {
         grapher.loadData("CountryBorders.CSV");
         grapher.loadPopulationData("popData_updated.csv");
         long temp = 0;
-        this.virus = new Virus("PLACEHOLDER", 0.5, 3, 10);
+        this.virus = new Virus("PLACEHOLDER", 0.5, 3, 0.5);
         // some countries that are on the map but don't have a registered population
         grapher.getPopulations().put(grapher.getCountries().get("Holy See"), temp);
         grapher.getPopulations().put(grapher.getCountries().get("Western Sahara"), temp);
@@ -60,6 +60,10 @@ public class StudentCode extends Server {
     @Override
     public void handleNextDay() {
         System.out.println("Next day has been triggered.: " + infectedCountries);
+        if (!virusStart || currSelected == null || currSelected.isEmpty()) {
+            sendMessageToUser("Please select a country before advancing the simulation.");
+            return;
+        }
         this.days++;
 
         HashSet<Country> toAdd = new HashSet<>();
@@ -117,11 +121,40 @@ public class StudentCode extends Server {
         // TODO: parse data and create the virus
         data = data.substring(1, data.length() - 1);
         String[] data_vals = data.split(",");
-        double spread = Double.parseDouble(data_vals[0].split(":")[1].substring(1, data_vals[0].split(":")[1].length() - 1));
-        double incubation = Double.parseDouble(data_vals[1].split(":")[1].substring(1, data_vals[1].split(":")[1].length() - 1));
-        double fatality = Double.parseDouble(data_vals[2].split(":")[1].substring(1, data_vals[2].split(":")[1].length() - 1));
+        double spread = this.virus.getSpreadTime();
+        double incubation = this.virus.getIncubationTime();
+        double fatalityRate = 0.5;
+
+        for (String val : data_vals) {
+            String[] keyValue = val.split(":", 2);
+            if (keyValue.length < 2) continue;
+            String key = keyValue[0].trim();
+            String value = keyValue[1].trim();
+
+            if (key.startsWith("\"") && key.endsWith("\"")) {
+                key = key.substring(1, key.length() - 1);
+            }
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+                value = value.substring(1, value.length() - 1);
+            }
+
+            if ("spreadRate".equals(key)) {
+                spread = bound(Double.parseDouble(value));
+            } else if ("incubation".equals(key)) {
+                incubation = Double.parseDouble(value);
+            } else if ("fatalityTime".equals(key) || "fatalityRate".equals(key)) {
+                fatalityRate = bound(Double.parseDouble(value));
+            }
+        }
+
         sendMessageToUser("☣️ New virus created: " + data);
-        this.virus = new Virus("CustomVirus", spread, incubation, fatality);
+        this.virus = new Virus("CustomVirus", spread, incubation, fatalityRate);
+    }
+
+    private double bound(double value) {
+        if (value < 0.0) return 0.1;
+        if (value > 1.0) return 0.9;
+        return value;
     }
 
     @Override
@@ -237,7 +270,7 @@ public class StudentCode extends Server {
 
     @Override
     public String getVirusData() {
-        return "{\"spreadRate\":" + virus.getSpreadTime() + ",\"incubation\":" + virus.getIncubationTime() + ",\"fatalityTime\":" + virus.getFatalityTime() + "}";
+        return "{\"spreadRate\":" + virus.getSpreadTime() + ",\"incubation\":" + virus.getIncubationTime() + ",\"fatalityTime\":" + virus.getFatalityTime() + ",\"fatalityRate\":" + virus.getFatalityTime() + "}";
     }
 
     
